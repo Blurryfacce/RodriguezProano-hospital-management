@@ -99,6 +99,15 @@ describe('utils.js', () => {
             expect(container.innerHTML).toContain('alert-success');
         });
 
+        test('sin indicar el tipo usa "success" por defecto', () => {
+            document.body.innerHTML = '<div id="alert-container"></div>';
+
+            showAlert('mensaje sin tipo');
+
+            const container = document.getElementById('alert-container');
+            expect(container.innerHTML).toContain('alert-success');
+        });
+
         test('sin #alert-container en el DOM no lanza error (boundary)', () => {
             document.body.innerHTML = '';
             expect(() => showAlert('mensaje', 'error')).not.toThrow();
