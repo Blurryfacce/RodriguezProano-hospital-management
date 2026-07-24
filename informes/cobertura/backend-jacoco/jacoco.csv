@@ -1,0 +1,20 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Hospital Management System,com.hospital,HospitalApplication,5,3,0,0,2,1,1,1,1,1
+Hospital Management System,com.hospital.dto,HistoriaClinicaDTO,0,52,0,0,0,15,0,15,0,15
+Hospital Management System,com.hospital.dto,CitaDTO,0,48,0,0,0,14,0,13,0,13
+Hospital Management System,com.hospital.dto,DoctorDTO,0,52,0,0,0,15,0,15,0,15
+Hospital Management System,com.hospital.dto,PacienteDTO,0,63,0,0,0,18,0,17,0,17
+Hospital Management System,com.hospital.model,Doctor,0,73,0,0,0,23,0,16,0,16
+Hospital Management System,com.hospital.model,Cita,0,69,0,0,0,21,0,14,0,14
+Hospital Management System,com.hospital.model,HistoriaClinica,4,75,0,0,1,23,1,15,1,15
+Hospital Management System,com.hospital.model,Paciente,0,92,0,0,0,27,0,18,0,18
+Hospital Management System,com.hospital.service,PacienteService,1,172,2,6,0,38,2,13,0,11
+Hospital Management System,com.hospital.service,DoctorService,0,128,0,0,0,31,0,11,0,11
+Hospital Management System,com.hospital.service,HistoriaClinicaService,0,103,0,2,0,23,0,10,0,9
+Hospital Management System,com.hospital.service,CitaService,0,128,1,3,0,28,1,13,0,12
+Hospital Management System,com.hospital.controller,HistoriaClinicaController,0,35,0,0,0,8,0,6,0,6
+Hospital Management System,com.hospital.controller,CitaController,7,55,0,0,1,12,1,9,1,9
+Hospital Management System,com.hospital.controller,DoctorController,0,50,0,0,0,11,0,8,0,8
+Hospital Management System,com.hospital.controller,PacienteController,0,51,0,0,0,12,0,8,0,8
+Hospital Management System,com.hospital.exception,ResourceNotFoundException,0,4,0,0,0,2,0,1,0,1
+Hospital Management System,com.hospital.exception,GlobalExceptionHandler,0,118,0,2,0,22,0,5,0,4

@@ -8,8 +8,8 @@
 
 ## 0. Datos de entrega
 
-- **Grupo** 
-- **Integrantes:** Isaac Proaño - Sergio Rodriguez
+- **Grupo:** RodriguezProano
+- **Integrantes:** Isaac Proaño, Sergio Rodríguez
 - **Repositorio:** [github.com/Blurryfacce/RodriguezProano-hospital-management](https://github.com/Blurryfacce/RodriguezProano-hospital-management)
 
 ### Estado de los entregables

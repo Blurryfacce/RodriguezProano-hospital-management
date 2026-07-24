@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PacienteController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Hospital Management System</a> &gt; <a href="index.source.html" class="el_package">com.hospital.controller</a> &gt; <span class="el_source">PacienteController.java</span></div><h1>PacienteController.java</h1><pre class="source lang-java linenums">package com.hospital.controller;
+
+import com.hospital.dto.PacienteDTO;
+import com.hospital.model.Paciente;
+import com.hospital.service.PacienteService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/pacientes&quot;)
+@CrossOrigin(origins = &quot;*&quot;)  // BUG INTENCIONAL: CORS demasiado permisivo (OWASP)
+public class PacienteController {
+
+    private final PacienteService pacienteService;
+
+<span class="fc" id="L19">    public PacienteController(PacienteService pacienteService) {</span>
+<span class="fc" id="L20">        this.pacienteService = pacienteService;</span>
+<span class="fc" id="L21">    }</span>
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;Paciente&gt;&gt; listar() {
+<span class="fc" id="L25">        return ResponseEntity.ok(pacienteService.listarTodos());</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Paciente&gt; buscar(@PathVariable Long id) {
+<span class="fc" id="L30">        return ResponseEntity.ok(pacienteService.buscarPorId(id));</span>
+    }
+
+    @PostMapping
+    public ResponseEntity&lt;Paciente&gt; crear(@Valid @RequestBody PacienteDTO dto) {
+<span class="fc" id="L35">        Paciente creado = pacienteService.crear(dto);</span>
+        // BUG INTENCIONAL: retorna 200 OK en vez de 201 Created
+<span class="fc" id="L37">        return ResponseEntity.ok(creado);</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Paciente&gt; actualizar(@PathVariable Long id, @Valid @RequestBody PacienteDTO dto) {
+<span class="fc" id="L42">        return ResponseEntity.ok(pacienteService.actualizar(id, dto));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; eliminar(@PathVariable Long id) {
+<span class="fc" id="L47">        pacienteService.eliminar(id);</span>
+        // BUG INTENCIONAL: no retorna 204 No Content, retorna 200 OK
+<span class="fc" id="L49">        return ResponseEntity.ok().build();</span>
+    }
+
+    @GetMapping(&quot;/buscar&quot;)
+    public ResponseEntity&lt;List&lt;Paciente&gt;&gt; buscarPorNombre(@RequestParam String nombre) {
+<span class="fc" id="L54">        return ResponseEntity.ok(pacienteService.buscarPorNombre(nombre));</span>
+    }
+
+    @GetMapping(&quot;/estadisticas/edad-promedio&quot;)
+    public ResponseEntity&lt;Double&gt; edadPromedio() {
+<span class="fc" id="L59">        return ResponseEntity.ok(pacienteService.calcularEdadPromedio());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

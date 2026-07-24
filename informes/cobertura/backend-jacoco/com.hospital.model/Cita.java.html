@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Cita.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Hospital Management System</a> &gt; <a href="index.source.html" class="el_package">com.hospital.model</a> &gt; <span class="el_source">Cita.java</span></div><h1>Cita.java</h1><pre class="source lang-java linenums">package com.hospital.model;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = &quot;citas&quot;)
+public class Cita {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // BUG INTENCIONAL: relacion sin @ManyToOne con FK explícita
+    // Solo se mapea como columna, permitiendo IDs de pacientes inexistentes
+    @Column(name = &quot;paciente_id&quot;, nullable = false)
+    private Long pacienteId;
+
+    // Esta si tiene la relacion correcta
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;doctor_id&quot;, nullable = false)
+    private Doctor doctor;
+
+    @Column(name = &quot;fecha_hora&quot;, nullable = false)
+    private LocalDateTime fechaHora;
+
+    @Column(length = 255)
+    private String motivo;
+
+    @Column(length = 20)
+<span class="fc" id="L31">    private String estado = &quot;PROGRAMADA&quot;;</span>
+
+<span class="fc" id="L33">    public Cita() {}</span>
+
+<span class="fc" id="L35">    public Cita(Long pacienteId, Doctor doctor, LocalDateTime fechaHora,</span>
+                String motivo, String estado) {
+<span class="fc" id="L37">        this.pacienteId = pacienteId;</span>
+<span class="fc" id="L38">        this.doctor = doctor;</span>
+<span class="fc" id="L39">        this.fechaHora = fechaHora;</span>
+<span class="fc" id="L40">        this.motivo = motivo;</span>
+<span class="fc" id="L41">        this.estado = estado;</span>
+<span class="fc" id="L42">    }</span>
+
+    // Getters y Setters
+<span class="fc" id="L45">    public Long getId() { return id; }</span>
+<span class="fc" id="L46">    public void setId(Long id) { this.id = id; }</span>
+
+<span class="fc" id="L48">    public Long getPacienteId() { return pacienteId; }</span>
+<span class="fc" id="L49">    public void setPacienteId(Long pacienteId) { this.pacienteId = pacienteId; }</span>
+
+<span class="fc" id="L51">    public Doctor getDoctor() { return doctor; }</span>
+<span class="fc" id="L52">    public void setDoctor(Doctor doctor) { this.doctor = doctor; }</span>
+
+<span class="fc" id="L54">    public LocalDateTime getFechaHora() { return fechaHora; }</span>
+<span class="fc" id="L55">    public void setFechaHora(LocalDateTime fechaHora) { this.fechaHora = fechaHora; }</span>
+
+<span class="fc" id="L57">    public String getMotivo() { return motivo; }</span>
+<span class="fc" id="L58">    public void setMotivo(String motivo) { this.motivo = motivo; }</span>
+
+<span class="fc" id="L60">    public String getEstado() { return estado; }</span>
+<span class="fc" id="L61">    public void setEstado(String estado) { this.estado = estado; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

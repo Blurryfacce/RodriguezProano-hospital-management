@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PacienteService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Hospital Management System</a> &gt; <a href="index.source.html" class="el_package">com.hospital.service</a> &gt; <span class="el_source">PacienteService.java</span></div><h1>PacienteService.java</h1><pre class="source lang-java linenums">package com.hospital.service;
+
+import com.hospital.dto.PacienteDTO;
+import com.hospital.exception.ResourceNotFoundException;
+import com.hospital.model.Paciente;
+import com.hospital.repository.PacienteRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class PacienteService {
+
+    private final PacienteRepository pacienteRepository;
+
+<span class="fc" id="L16">    public PacienteService(PacienteRepository pacienteRepository) {</span>
+<span class="fc" id="L17">        this.pacienteRepository = pacienteRepository;</span>
+<span class="fc" id="L18">    }</span>
+
+    public List&lt;Paciente&gt; listarTodos() {
+<span class="fc" id="L21">        return pacienteRepository.findAll();</span>
+    }
+
+    public Paciente buscarPorId(Long id) {
+        // BUG INTENCIONAL: No maneja correctamente el caso de ID negativo
+        // Ademas, orElseThrow no esta importado/definido correctamente en el repository
+<span class="fc" id="L27">        return pacienteRepository.findById(id)</span>
+<span class="fc" id="L28">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Paciente no encontrado con ID: &quot; + id));</span>
+    }
+
+    public Paciente crear(PacienteDTO dto) {
+<span class="fc" id="L32">        Paciente paciente = toEntity(dto);</span>
+        // BUG INTENCIONAL: No valida si el email ya existe antes de guardar
+<span class="fc" id="L34">        return pacienteRepository.save(paciente);</span>
+    }
+
+    public Paciente actualizar(Long id, PacienteDTO dto) {
+<span class="fc" id="L38">        Paciente paciente = buscarPorId(id);</span>
+        // BUG INTENCIONAL: actualiza todos los campos sin validar si vienen nulos
+<span class="fc" id="L40">        paciente.setNombre(dto.getNombre());</span>
+<span class="fc" id="L41">        paciente.setApellido(dto.getApellido());</span>
+<span class="fc" id="L42">        paciente.setFechaNacimiento(dto.getFechaNacimiento());</span>
+<span class="fc" id="L43">        paciente.setEmail(dto.getEmail());</span>
+<span class="fc" id="L44">        paciente.setTelefono(dto.getTelefono());</span>
+<span class="fc" id="L45">        paciente.setDireccion(dto.getDireccion());</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        if (dto.getActivo() != null) {</span>
+<span class="fc" id="L47">            paciente.setActivo(dto.getActivo());</span>
+        }
+<span class="fc" id="L49">        return pacienteRepository.save(paciente);</span>
+    }
+
+    public void eliminar(Long id) {
+        // BUG INTENCIONAL: Eliminacion fisica sin verificar dependencias (citas, historias)
+        // Deberia ser borrado logico o verificar FK constraints
+<span class="fc" id="L55">        Paciente paciente = buscarPorId(id);</span>
+<span class="fc" id="L56">        pacienteRepository.delete(paciente);</span>
+<span class="fc" id="L57">    }</span>
+
+    public List&lt;Paciente&gt; buscarPorNombre(String nombre) {
+        // BUG INTENCIONAL: si nombre es null, el metodo falla con NullPointerException
+        // Ademas, usa una query nativa que es innecesaria
+<span class="fc" id="L62">        return pacienteRepository.buscarPorNombre(nombre);</span>
+    }
+
+    public Paciente buscarPorEmail(String email) {
+        // BUG INTENCIONAL: no valida si email es null o vacio
+        // Tampoco maneja el caso de multiples resultados
+<span class="fc" id="L68">        return pacienteRepository.findByEmail(email);</span>
+    }
+
+    public double calcularEdadPromedio() {
+<span class="fc" id="L72">        List&lt;Paciente&gt; pacientes = pacienteRepository.findAll();</span>
+        // BUG INTENCIONAL: division por cero si no hay pacientes
+<span class="fc" id="L74">        long suma = 0;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        for (Paciente p : pacientes) {</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">            if (p.getFechaNacimiento() != null) {</span>
+<span class="fc" id="L77">                suma += java.time.Period.between(p.getFechaNacimiento(), java.time.LocalDate.now()).getYears();</span>
+            }
+        }
+<span class="fc" id="L80">        return (double) suma / pacientes.size(); // BUG: division by zero si lista vacia</span>
+    }
+
+    private Paciente toEntity(PacienteDTO dto) {
+<span class="fc" id="L84">        Paciente p = new Paciente();</span>
+<span class="fc" id="L85">        p.setNombre(dto.getNombre());</span>
+<span class="fc" id="L86">        p.setApellido(dto.getApellido());</span>
+<span class="fc" id="L87">        p.setFechaNacimiento(dto.getFechaNacimiento());</span>
+<span class="fc" id="L88">        p.setEmail(dto.getEmail());</span>
+<span class="fc" id="L89">        p.setTelefono(dto.getTelefono());</span>
+<span class="fc" id="L90">        p.setDireccion(dto.getDireccion());</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        p.setActivo(dto.getActivo() != null ? dto.getActivo() : true);</span>
+<span class="fc" id="L92">        return p;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

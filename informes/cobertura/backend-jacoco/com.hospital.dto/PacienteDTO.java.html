@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PacienteDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Hospital Management System</a> &gt; <a href="index.source.html" class="el_package">com.hospital.dto</a> &gt; <span class="el_source">PacienteDTO.java</span></div><h1>PacienteDTO.java</h1><pre class="source lang-java linenums">package com.hospital.dto;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
+import java.time.LocalDate;
+
+public class PacienteDTO {
+
+    private Long id;
+
+    // BUG INTENCIONAL: NotBlank en nombre pero no en apellido en DTO
+    // El validador del servicio no valida longitud minima
+    @NotBlank(message = &quot;El nombre es obligatorio&quot;)
+    private String nombre;
+
+    private String apellido;  // BUG: deberia tener @NotBlank
+
+    // BUG INTENCIONAL: @Past permite fechas muy antiguas, no valida edad maxima
+    @Past(message = &quot;La fecha de nacimiento debe ser en el pasado&quot;)
+    private LocalDate fechaNacimiento;
+
+    @Email(message = &quot;El email debe ser valido&quot;)
+    private String email;
+
+    @Pattern(regexp = &quot;\\d{10}&quot;, message = &quot;El telefono debe tener 10 digitos&quot;)
+    private String telefono;
+
+    private String direccion;
+<span class="fc" id="L31">    private Boolean activo = true;</span>
+
+<span class="fc" id="L33">    public PacienteDTO() {}</span>
+
+<span class="fc" id="L35">    public Long getId() { return id; }</span>
+<span class="fc" id="L36">    public void setId(Long id) { this.id = id; }</span>
+
+<span class="fc" id="L38">    public String getNombre() { return nombre; }</span>
+<span class="fc" id="L39">    public void setNombre(String nombre) { this.nombre = nombre; }</span>
+
+<span class="fc" id="L41">    public String getApellido() { return apellido; }</span>
+<span class="fc" id="L42">    public void setApellido(String apellido) { this.apellido = apellido; }</span>
+
+<span class="fc" id="L44">    public LocalDate getFechaNacimiento() { return fechaNacimiento; }</span>
+<span class="fc" id="L45">    public void setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }</span>
+
+<span class="fc" id="L47">    public String getEmail() { return email; }</span>
+<span class="fc" id="L48">    public void setEmail(String email) { this.email = email; }</span>
+
+<span class="fc" id="L50">    public String getTelefono() { return telefono; }</span>
+<span class="fc" id="L51">    public void setTelefono(String telefono) { this.telefono = telefono; }</span>
+
+<span class="fc" id="L53">    public String getDireccion() { return direccion; }</span>
+<span class="fc" id="L54">    public void setDireccion(String direccion) { this.direccion = direccion; }</span>
+
+<span class="fc" id="L56">    public Boolean getActivo() { return activo; }</span>
+<span class="fc" id="L57">    public void setActivo(Boolean activo) { this.activo = activo; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

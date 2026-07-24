@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Paciente.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Hospital Management System</a> &gt; <a href="index.source.html" class="el_package">com.hospital.model</a> &gt; <span class="el_source">Paciente.java</span></div><h1>Paciente.java</h1><pre class="source lang-java linenums">package com.hospital.model;
+
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = &quot;pacientes&quot;)
+public class Paciente {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 100)
+    private String nombre;
+
+    @Column(nullable = false, length = 100)
+    private String apellido;
+
+    @Column(name = &quot;fecha_nacimiento&quot;)
+    private LocalDate fechaNacimiento;
+
+    @Column(length = 150)
+    private String email;
+
+    @Column(length = 20)
+    private String telefono;
+
+    @Column(length = 255)
+    private String direccion;
+
+    @Column
+<span class="fc" id="L33">    private Boolean activo = true;</span>
+
+<span class="fc" id="L35">    public Paciente() {}</span>
+
+<span class="fc" id="L37">    public Paciente(String nombre, String apellido, LocalDate fechaNacimiento,</span>
+                    String email, String telefono, String direccion) {
+<span class="fc" id="L39">        this.nombre = nombre;</span>
+<span class="fc" id="L40">        this.apellido = apellido;</span>
+<span class="fc" id="L41">        this.fechaNacimiento = fechaNacimiento;</span>
+<span class="fc" id="L42">        this.email = email;</span>
+<span class="fc" id="L43">        this.telefono = telefono;</span>
+<span class="fc" id="L44">        this.direccion = direccion;</span>
+<span class="fc" id="L45">        this.activo = true;</span>
+<span class="fc" id="L46">    }</span>
+
+    // Getters y Setters
+<span class="fc" id="L49">    public Long getId() { return id; }</span>
+<span class="fc" id="L50">    public void setId(Long id) { this.id = id; }</span>
+
+<span class="fc" id="L52">    public String getNombre() { return nombre; }</span>
+<span class="fc" id="L53">    public void setNombre(String nombre) { this.nombre = nombre; }</span>
+
+<span class="fc" id="L55">    public String getApellido() { return apellido; }</span>
+<span class="fc" id="L56">    public void setApellido(String apellido) { this.apellido = apellido; }</span>
+
+<span class="fc" id="L58">    public LocalDate getFechaNacimiento() { return fechaNacimiento; }</span>
+<span class="fc" id="L59">    public void setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }</span>
+
+<span class="fc" id="L61">    public String getEmail() { return email; }</span>
+<span class="fc" id="L62">    public void setEmail(String email) { this.email = email; }</span>
+
+<span class="fc" id="L64">    public String getTelefono() { return telefono; }</span>
+<span class="fc" id="L65">    public void setTelefono(String telefono) { this.telefono = telefono; }</span>
+
+<span class="fc" id="L67">    public String getDireccion() { return direccion; }</span>
+<span class="fc" id="L68">    public void setDireccion(String direccion) { this.direccion = direccion; }</span>
+
+<span class="fc" id="L70">    public Boolean getActivo() { return activo; }</span>
+<span class="fc" id="L71">    public void setActivo(Boolean activo) { this.activo = activo; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

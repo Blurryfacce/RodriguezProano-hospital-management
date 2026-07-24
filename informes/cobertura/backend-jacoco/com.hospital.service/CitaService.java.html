@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CitaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Hospital Management System</a> &gt; <a href="index.source.html" class="el_package">com.hospital.service</a> &gt; <span class="el_source">CitaService.java</span></div><h1>CitaService.java</h1><pre class="source lang-java linenums">package com.hospital.service;
+
+import com.hospital.dto.CitaDTO;
+import com.hospital.exception.ResourceNotFoundException;
+import com.hospital.model.Cita;
+import com.hospital.model.Doctor;
+import com.hospital.repository.CitaRepository;
+import com.hospital.repository.DoctorRepository;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+// BUG INTENCIONAL: Falta @Transactional en metodos que modifican datos
+public class CitaService {
+
+    private final CitaRepository citaRepository;
+    private final DoctorRepository doctorRepository;
+
+<span class="fc" id="L21">    public CitaService(CitaRepository citaRepository, DoctorRepository doctorRepository) {</span>
+<span class="fc" id="L22">        this.citaRepository = citaRepository;</span>
+<span class="fc" id="L23">        this.doctorRepository = doctorRepository;</span>
+<span class="fc" id="L24">    }</span>
+
+    public List&lt;Cita&gt; listarTodas() {
+<span class="fc" id="L27">        return citaRepository.findAll();</span>
+    }
+
+    public Cita buscarPorId(Long id) {
+<span class="fc" id="L31">        return citaRepository.findById(id)</span>
+<span class="fc" id="L32">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Cita no encontrada con ID: &quot; + id));</span>
+    }
+
+    // BUG INTENCIONAL: no es @Transactional, si falla despues de guardar no hay rollback
+    public Cita crear(CitaDTO dto) {
+        // BUG: No valida que el paciente exista (no hay FK en DB tampoco)
+<span class="fc" id="L38">        Doctor doctor = doctorRepository.findById(dto.getDoctorId())</span>
+<span class="fc" id="L39">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Doctor no encontrado&quot;));</span>
+
+<span class="fc" id="L41">        Cita cita = new Cita();</span>
+<span class="fc" id="L42">        cita.setPacienteId(dto.getPacienteId());</span>
+<span class="fc" id="L43">        cita.setDoctor(doctor);</span>
+<span class="fc" id="L44">        cita.setFechaHora(dto.getFechaHora());</span>
+<span class="fc" id="L45">        cita.setMotivo(dto.getMotivo());</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        cita.setEstado(dto.getEstado() != null ? dto.getEstado() : &quot;PROGRAMADA&quot;);</span>
+
+        // BUG: no valida que el doctor no tenga otra cita a la misma hora (doble booking)
+<span class="fc" id="L49">        return citaRepository.save(cita);</span>
+    }
+
+    public Cita actualizar(Long id, CitaDTO dto) {
+<span class="fc" id="L53">        Cita cita = buscarPorId(id);</span>
+<span class="fc" id="L54">        cita.setFechaHora(dto.getFechaHora());</span>
+<span class="fc" id="L55">        cita.setMotivo(dto.getMotivo());</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (dto.getEstado() != null) {</span>
+<span class="fc" id="L57">            cita.setEstado(dto.getEstado());</span>
+        }
+<span class="fc" id="L59">        return citaRepository.save(cita);</span>
+    }
+
+    public void eliminar(Long id) {
+<span class="fc" id="L63">        citaRepository.deleteById(id);</span>
+<span class="fc" id="L64">    }</span>
+
+    public List&lt;Cita&gt; listarPorPaciente(Long pacienteId) {
+<span class="fc" id="L67">        return citaRepository.findByPacienteId(pacienteId);</span>
+    }
+
+    public List&lt;Cita&gt; listarPorDoctor(Long doctorId) {
+        // BUG INTENCIONAL: N+1 query - accede al doctor para cada cita
+        // cuando se serializa a JSON, cada cita carga el doctor por separado
+<span class="fc" id="L73">        return citaRepository.findByDoctorId(doctorId);</span>
+    }
+
+    public List&lt;Cita&gt; listarPorEstado(String estado) {
+        // BUG: N+1 query - el metodo findCitasByEstadoOrdered no usa JOIN FETCH
+<span class="fc" id="L78">        return citaRepository.findCitasByEstadoOrdered(estado);</span>
+    }
+
+    public List&lt;Cita&gt; listarPorRangoFechas(LocalDateTime inicio, LocalDateTime fin) {
+        // BUG: sin validacion de que inicio &lt; fin
+<span class="fc" id="L83">        return citaRepository.findByFechaHoraBetween(inicio, fin);</span>
+    }
+
+    // BUG INTENCIONAL: No hay metodo para verificar conflictos de horario (doble booking)
+    // Los estudiantes deben identificar esta carencia
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

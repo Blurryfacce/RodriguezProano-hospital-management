@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HistoriaClinicaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Hospital Management System</a> &gt; <a href="index.source.html" class="el_package">com.hospital.service</a> &gt; <span class="el_source">HistoriaClinicaService.java</span></div><h1>HistoriaClinicaService.java</h1><pre class="source lang-java linenums">package com.hospital.service;
+
+import com.hospital.dto.HistoriaClinicaDTO;
+import com.hospital.exception.ResourceNotFoundException;
+import com.hospital.model.Doctor;
+import com.hospital.model.HistoriaClinica;
+import com.hospital.model.Paciente;
+import com.hospital.repository.DoctorRepository;
+import com.hospital.repository.HistoriaClinicaRepository;
+import com.hospital.repository.PacienteRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class HistoriaClinicaService {
+
+    private final HistoriaClinicaRepository historiaRepository;
+    private final PacienteRepository pacienteRepository;
+    private final DoctorRepository doctorRepository;
+
+<span class="fc" id="L22">    public HistoriaClinicaService(HistoriaClinicaRepository historiaRepository,</span>
+                                  PacienteRepository pacienteRepository,
+                                  DoctorRepository doctorRepository) {
+<span class="fc" id="L25">        this.historiaRepository = historiaRepository;</span>
+<span class="fc" id="L26">        this.pacienteRepository = pacienteRepository;</span>
+<span class="fc" id="L27">        this.doctorRepository = doctorRepository;</span>
+<span class="fc" id="L28">    }</span>
+
+    public List&lt;HistoriaClinica&gt; listarTodas() {
+        // BUG: sin paginacion, potencial OOM con muchos registros
+<span class="fc" id="L32">        return historiaRepository.findAllByOrderByFechaCreacionDesc();</span>
+    }
+
+    public HistoriaClinica buscarPorId(Long id) {
+<span class="fc" id="L36">        return historiaRepository.findById(id)</span>
+<span class="fc" id="L37">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Historia clinica no encontrada con ID: &quot; + id));</span>
+    }
+
+    public HistoriaClinica crear(HistoriaClinicaDTO dto) {
+<span class="fc" id="L41">        Paciente paciente = pacienteRepository.findById(dto.getPacienteId())</span>
+<span class="fc" id="L42">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Paciente no encontrado&quot;));</span>
+
+<span class="fc" id="L44">        Doctor doctor = null;</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (dto.getDoctorId() != null) {</span>
+<span class="fc" id="L46">            doctor = doctorRepository.findById(dto.getDoctorId())</span>
+<span class="fc" id="L47">                    .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Doctor no encontrado&quot;));</span>
+        }
+
+<span class="fc" id="L50">        HistoriaClinica historia = new HistoriaClinica();</span>
+<span class="fc" id="L51">        historia.setPaciente(paciente);</span>
+<span class="fc" id="L52">        historia.setDoctor(doctor);</span>
+<span class="fc" id="L53">        historia.setDiagnostico(dto.getDiagnostico());</span>
+<span class="fc" id="L54">        historia.setTratamiento(dto.getTratamiento());</span>
+<span class="fc" id="L55">        historia.setObservaciones(dto.getObservaciones());</span>
+
+        // BUG INTENCIONAL: no sanitiza el contenido HTML/scripts del diagnostico (XSS)
+<span class="fc" id="L58">        return historiaRepository.save(historia);</span>
+    }
+
+    public List&lt;HistoriaClinica&gt; listarPorPaciente(Long pacienteId) {
+<span class="fc" id="L62">        return historiaRepository.findByPacienteId(pacienteId);</span>
+    }
+
+    public List&lt;HistoriaClinica&gt; listarPorDoctor(Long doctorId) {
+<span class="fc" id="L66">        return historiaRepository.findByDoctorId(doctorId);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

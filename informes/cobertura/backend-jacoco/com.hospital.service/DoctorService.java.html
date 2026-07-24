@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DoctorService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Hospital Management System</a> &gt; <a href="index.source.html" class="el_package">com.hospital.service</a> &gt; <span class="el_source">DoctorService.java</span></div><h1>DoctorService.java</h1><pre class="source lang-java linenums">package com.hospital.service;
+
+import com.hospital.dto.DoctorDTO;
+import com.hospital.exception.ResourceNotFoundException;
+import com.hospital.model.Doctor;
+import com.hospital.repository.DoctorRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class DoctorService {
+
+    private final DoctorRepository doctorRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+<span class="fc" id="L21">    public DoctorService(DoctorRepository doctorRepository) {</span>
+<span class="fc" id="L22">        this.doctorRepository = doctorRepository;</span>
+<span class="fc" id="L23">    }</span>
+
+    public List&lt;Doctor&gt; listarTodos() {
+<span class="fc" id="L26">        return doctorRepository.findAll();</span>
+    }
+
+    public Doctor buscarPorId(Long id) {
+<span class="fc" id="L30">        return doctorRepository.findById(id)</span>
+<span class="fc" id="L31">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Doctor no encontrado con ID: &quot; + id));</span>
+    }
+
+    public Doctor crear(DoctorDTO dto) {
+<span class="fc" id="L35">        Doctor doctor = toEntity(dto);</span>
+<span class="fc" id="L36">        return doctorRepository.save(doctor);</span>
+    }
+
+    public Doctor actualizar(Long id, DoctorDTO dto) {
+<span class="fc" id="L40">        Doctor doctor = buscarPorId(id);</span>
+<span class="fc" id="L41">        doctor.setNombre(dto.getNombre());</span>
+<span class="fc" id="L42">        doctor.setApellido(dto.getApellido());</span>
+<span class="fc" id="L43">        doctor.setEspecialidad(dto.getEspecialidad());</span>
+<span class="fc" id="L44">        doctor.setEmail(dto.getEmail());</span>
+<span class="fc" id="L45">        doctor.setTelefono(dto.getTelefono());</span>
+<span class="fc" id="L46">        doctor.setConsultorio(dto.getConsultorio());</span>
+<span class="fc" id="L47">        return doctorRepository.save(doctor);</span>
+    }
+
+    public void eliminar(Long id) {
+        // BUG INTENCIONAL: no verifica si el doctor tiene citas activas antes de eliminar
+<span class="fc" id="L52">        doctorRepository.deleteById(id);</span>
+<span class="fc" id="L53">    }</span>
+
+    // BUG INTENCIONAL: SQL Injection — construye query concatenando strings
+    // Esta es una vulnerabilidad real de inyeccion SQL
+    public List&lt;Doctor&gt; buscarPorEspecialidadInsegura(String especialidad) {
+<span class="fc" id="L58">        String sql = &quot;SELECT * FROM doctores WHERE especialidad ILIKE '%&quot; + especialidad + &quot;%'&quot;;</span>
+<span class="fc" id="L59">        jakarta.persistence.Query query = entityManager.createNativeQuery(sql, Doctor.class);</span>
+<span class="fc" id="L60">        return query.getResultList();</span>
+    }
+
+    // Version segura del mismo metodo (para que los estudiantes comparen)
+    public List&lt;Doctor&gt; buscarPorEspecialidad(String especialidad) {
+<span class="fc" id="L65">        return doctorRepository.findByEspecialidadContainingIgnoreCase(especialidad);</span>
+    }
+
+    // BUG INTENCIONAL: No hay validacion de que nombre/apellido no esten vacios
+    public List&lt;Doctor&gt; buscarPorNombreCompleto(String nombre, String apellido) {
+<span class="fc" id="L70">        return doctorRepository.findByNombreAndApellido(nombre, apellido);</span>
+    }
+
+    private Doctor toEntity(DoctorDTO dto) {
+<span class="fc" id="L74">        Doctor d = new Doctor();</span>
+<span class="fc" id="L75">        d.setNombre(dto.getNombre());</span>
+<span class="fc" id="L76">        d.setApellido(dto.getApellido());</span>
+<span class="fc" id="L77">        d.setEspecialidad(dto.getEspecialidad());</span>
+<span class="fc" id="L78">        d.setEmail(dto.getEmail());</span>
+<span class="fc" id="L79">        d.setTelefono(dto.getTelefono());</span>
+<span class="fc" id="L80">        d.setConsultorio(dto.getConsultorio());</span>
+<span class="fc" id="L81">        return d;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
