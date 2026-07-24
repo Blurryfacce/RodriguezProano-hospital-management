@@ -144,9 +144,10 @@ class DoctorServiceTest {
         @Test
         @DisplayName("buscarPorEspecialidadInsegura concatena el parametro en la query nativa (SQLi documentado)")
         void buscarPorEspecialidadInsegura_construyeQueryConcatenada() {
-            // No se ejecuta contra una base real: se documenta que el metodo existe
-            // y construye SQL nativo concatenando el input del usuario sin parametrizar,
-            // lo cual es una vulnerabilidad de inyeccion SQL (ver informes/hallazgos).
+            // No se mockea EntityManager: en este entorno (JDK 24 + Mockito 5.11 fijado por
+            // spring-boot-starter-parent 3.3.0) la instrumentacion de interfaces jakarta.persistence
+            // falla (byte-buddy). Se documenta la vulnerabilidad de forma estatica; la ejecucion real
+            // se cubre en el informe OWASP (Paso 7) contra la base de datos real.
             String especialidadMaliciosa = "x'; DROP TABLE doctores; --";
             String sqlEsperado = "SELECT * FROM doctores WHERE especialidad ILIKE '%" + especialidadMaliciosa + "%'";
 

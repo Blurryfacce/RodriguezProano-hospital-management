@@ -129,6 +129,26 @@ class CitaServiceTest {
 
             assertThat(resultado).containsExactly(cita);
         }
+
+        @Test
+        @DisplayName("listarPorDoctor retorna las citas asociadas al doctorId")
+        void listarPorDoctor_debeRetornarCitasDelDoctor() {
+            when(citaRepository.findByDoctorId(1L)).thenReturn(Collections.singletonList(cita));
+
+            List<Cita> resultado = citaService.listarPorDoctor(1L);
+
+            assertThat(resultado).containsExactly(cita);
+        }
+
+        @Test
+        @DisplayName("listarPorEstado retorna las citas con el estado indicado")
+        void listarPorEstado_debeRetornarCitasConEseEstado() {
+            when(citaRepository.findCitasByEstadoOrdered("PROGRAMADA")).thenReturn(Collections.singletonList(cita));
+
+            List<Cita> resultado = citaService.listarPorEstado("PROGRAMADA");
+
+            assertThat(resultado).containsExactly(cita);
+        }
     }
 
     @Nested
@@ -212,6 +232,21 @@ class CitaServiceTest {
                     .isInstanceOf(ResourceNotFoundException.class);
 
             verify(citaRepository, never()).save(any(Cita.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("Eliminacion")
+    class Eliminacion {
+
+        @Test
+        @DisplayName("eliminar delega en el repositorio sin verificar existencia previa (bug documentado)")
+        void eliminar_delegaSinVerificarExistencia() {
+            doNothing().when(citaRepository).deleteById(10L);
+
+            citaService.eliminar(10L);
+
+            verify(citaRepository).deleteById(10L);
         }
     }
 }

@@ -133,6 +133,17 @@ class PacienteServiceTest {
 
             verify(pacienteRepository).delete(paciente);
         }
+
+        @Test
+        @DisplayName("buscarPorNombre delega en la consulta nativa parametrizada del repositorio")
+        void buscarPorNombre_conNombreValido_debeRetornarCoincidencias() {
+            when(pacienteRepository.buscarPorNombre("Juan")).thenReturn(Collections.singletonList(paciente));
+
+            List<Paciente> resultado = pacienteService.buscarPorNombre("Juan");
+
+            assertThat(resultado).containsExactly(paciente);
+            verify(pacienteRepository).buscarPorNombre("Juan");
+        }
     }
 
     @Nested
