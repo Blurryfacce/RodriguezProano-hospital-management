@@ -1,0 +1,40 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true,
+    "jest": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "script"
+  },
+  "ignorePatterns": ["coverage/", "node_modules/", "e2e-report/", "test-results/", "playwright-report/"],
+  "globals": {
+    "formatDate": "readonly",
+    "formatDateTime": "readonly",
+    "escapeHTML": "readonly",
+    "showAlert": "readonly",
+    "validateEmail": "readonly",
+    "validateTelefono": "readonly",
+    "isFutureDate": "readonly",
+    "localToISO": "readonly",
+    "apiFetch": "readonly",
+    "API_BASE": "readonly",
+    "PacientesAPI": "readonly",
+    "DoctoresAPI": "readonly",
+    "CitasAPI": "readonly",
+    "HistoriasAPI": "readonly",
+    "PacientesModule": "readonly",
+    "DoctoresModule": "readonly",
+    "CitasModule": "readonly",
+    "HistoriasModule": "readonly",
+    "App": "readonly"
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": "off"
+  }
+}
