@@ -1,3 +1,6 @@
 target
 node_modules
 coverage
+frontend/e2e-report
+frontend/test-results
+frontend/playwright-report
