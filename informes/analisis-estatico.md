@@ -35,6 +35,10 @@ Desglose Checkstyle por regla:
 | `AvoidStarImportCheck` | 8 |
 | `AbbreviationAsWordInNameCheck` | 4 |
 
+> 📸 **[CAPTURA 1 AQUÍ — Checkstyle]**
+> `![Consola de Checkstyle mostrando las violaciones y el resumen final](ruta/a/captura-checkstyle.png)`
+> Sugerencia: que se vea el inicio de las violaciones y, sobre todo, la línea final `[INFO] You have 930 Checkstyle violations.` + `BUILD SUCCESS`.
+
 Desglose SpotBugs/FindSecBugs por tipo:
 
 | Tipo | Cantidad | Categoría |
@@ -42,6 +46,14 @@ Desglose SpotBugs/FindSecBugs por tipo:
 | `SPRING_ENDPOINT` (FindSecBugs) | 29 | SECURITY (informativo — marca puntos de entrada para taint analysis) |
 | `EI_EXPOSE_REP2` | 7 | MALICIOUS_CODE (Critical) |
 | `EI_EXPOSE_REP` | 4 | MALICIOUS_CODE (Critical) |
+
+> 📸 **[CAPTURA 2 AQUÍ — SpotBugs + FindSecBugs]**
+> `![Visor grafico de SpotBugs (mvn spotbugs:gui) mostrando los hallazgos por categoria](ruta/a/captura-spotbugs.png)`
+> Sugerencia: la ventana del visor gráfico (`mvn spotbugs:gui`), navegando a las categorías `SECURITY` y `MALICIOUS_CODE`.
+
+> 📸 **[CAPTURA 3 AQUÍ — ESLint]**
+> `![Consola de ESLint mostrando los 16 warnings por archivo y el resumen final](ruta/a/captura-eslint.png)`
+> Sugerencia: la salida completa de `npx eslint "js/**/*.js"`, terminando en la línea `✖ 16 problems (0 errors, 16 warnings)`.
 
 ## 3. Análisis en profundidad de 5 hallazgos relevantes
 
@@ -95,4 +107,4 @@ npx eslint "js/**/*.js" --format json -o eslint-report.json
 
 ## 5. Nota sobre el formato de entrega
 
-Este informe se generó en Markdown para mantener el ritmo de trabajo del proyecto (todas las herramientas de conversión a PDF disponibles requerían instalación adicional). Se recomienda exportarlo a PDF antes de la entrega final (Word, la extensión "Markdown PDF" de VS Code, o imprimir a PDF desde un visor Markdown) y añadir capturas de pantalla de la consola de Checkstyle/SpotBugs/ESLint como evidencia visual, según pide la rúbrica.
+Este informe se generó en Markdown para mantener el ritmo de trabajo del proyecto (todas las herramientas de conversión a PDF disponibles requerían instalación adicional). Se dejaron marcadas 3 zonas con `📸 [CAPTURA N AQUÍ]` (sección 2) indicando dónde insertar cada captura de pantalla antes de exportar a PDF (Word, la extensión "Markdown PDF" de VS Code, o imprimir a PDF desde un visor Markdown). Para insertar una captura, reemplazar la línea de sugerencia por `![descripción](ruta/a/la/imagen.png)` con la ruta real del archivo.
