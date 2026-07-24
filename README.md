@@ -6,6 +6,53 @@
 
 ---
 
+## 0. Datos de entrega
+
+- **Grupo** 
+- **Integrantes:** Isaac Proaño - Sergio Rodriguez
+- **Repositorio:** [github.com/Blurryfacce/RodriguezProano-hospital-management](https://github.com/Blurryfacce/RodriguezProano-hospital-management)
+
+### Estado de los entregables
+
+| Entregable | Estado | Resultado |
+|---|---|---|
+| Pruebas unitarias backend (JUnit 5 + Mockito) | ✅ Completo | 47 tests, 90–100% cobertura por clase de servicio |
+| Pruebas de integración backend (MockMvc + H2) | ✅ Completo | 45 tests, causa raíz de bug de serialización (BUG-01) aislada y documentada |
+| Pruebas unitarias frontend (Jest) | ✅ Completo | 59 tests, 100% cobertura en `utils.js` y `api.js` |
+| Pruebas de integración frontend / E2E (Playwright) | ✅ Completo | 12 tests, 4 flujos (Pacientes, Doctores, Citas, Historias), con capturas de pantalla |
+| Análisis estático (Checkstyle, SpotBugs+FindSecBugs, ESLint) | ✅ Completo | 988 hallazgos totales, informe en `informes/analisis-estatico.md` |
+| Análisis de seguridad OWASP Top 10 | ✅ Completo | 11 vulnerabilidades verificadas y documentadas en `informes/analisis-owasp.md` |
+| CI/CD (`.github/workflows/`) | ✅ Punto extra | Pipeline con pruebas backend/frontend + análisis estático en cada push/PR |
+
+La bitácora técnica detallada de cada hallazgo (incluyendo bugs reales no documentados en los comentarios del código base) está en [`informes/hallazgos/`](informes/hallazgos/).
+
+### Cómo ejecutar las pruebas
+
+```bash
+# Backend: unitarias + integracion (H2 en memoria, no requiere Postgres)
+cd backend
+mvn test
+mvn jacoco:report          # reporte de cobertura en target/site/jacoco/index.html
+
+# Backend: analisis estatico
+mvn checkstyle:checkstyle  # target/checkstyle-result.xml
+mvn compile spotbugs:spotbugs   # target/spotbugsXml.xml (o `mvn spotbugs:gui` para visor grafico)
+
+# Frontend: unitarias
+cd frontend
+npm install
+npm run test:coverage      # reporte de cobertura en frontend/coverage/index.html
+
+# Frontend: analisis estatico
+npx eslint "js/**/*.js"
+
+# E2E (requiere Docker Desktop corriendo; levanta backend/frontend automaticamente)
+npm run test:e2e
+npm run test:e2e:report    # reporte HTML con capturas de pantalla
+```
+
+---
+
 ## 1. Descripción del Proyecto
 
 Sistema de gestión hospitalaria fullstack que permite administrar **pacientes**, **doctores**, **citas médicas** e **historias clínicas**. El sistema está desarrollado con **Spring Boot 3.3** (backend), **JavaScript/HTML/CSS** (frontend) y **PostgreSQL** (base de datos).
@@ -51,30 +98,39 @@ hospital-management/
 ├── backend/
 │   ├── src/main/java/com/hospital/
 │   │   ├── HospitalApplication.java
-│   │   ├── model/           # Entidades JPA
-│   │   ├── dto/             # Objetos de transferencia
-│   │   ├── repository/      # Repositorios JPA
-│   │   ├── service/         # Lógica de negocio
-│   │   ├── controller/      # Controladores REST
-│   │   └── exception/       # Manejo de excepciones
+│   │   ├── model/                # Entidades JPA
+│   │   ├── dto/                  # Objetos de transferencia
+│   │   ├── repository/           # Repositorios JPA
+│   │   ├── service/               # Lógica de negocio
+│   │   ├── controller/            # Controladores REST
+│   │   └── exception/             # Manejo de excepciones
 │   ├── src/main/resources/
 │   │   ├── application.properties
-│   │   ├── schema.sql       # DDL - Estructura de la BD
-│   │   └── data.sql         # DML - Datos semilla
-│   ├── src/test/            # Pruebas (a implementar)
+│   │   ├── schema.sql             # DDL - Estructura de la BD
+│   │   └── data.sql               # DML - Datos semilla
+│   ├── src/test/java/com/hospital/
+│   │   ├── service/                # Pruebas unitarias (JUnit 5 + Mockito)
+│   │   └── controller/             # Pruebas de integracion (MockMvc + H2)
+│   ├── src/test/resources/
+│   │   └── application-test.properties
 │   └── pom.xml
 ├── frontend/
 │   ├── index.html
-│   ├── css/
-│   │   └── styles.css
-│   └── js/
-│       ├── app.js           # Módulo principal
-│       ├── api.js           # Comunicación con API REST
-│       ├── utils.js         # Utilidades (formateo, validación)
-│       ├── pacientes.js     # Módulo de pacientes
-│       ├── doctores.js      # Módulo de doctores
-│       ├── citas.js         # Módulo de citas
-│       └── historias.js     # Módulo de historias clínicas
+│   ├── css/styles.css
+│   ├── js/
+│   │   ├── app.js                 # Módulo principal
+│   │   ├── api.js                 # Comunicación con API REST
+│   │   ├── utils.js               # Utilidades (formateo, validación)
+│   │   ├── pacientes.js / doctores.js / citas.js / historias.js
+│   │   └── __tests__/             # Pruebas unitarias (Jest)
+│   ├── e2e/                       # Pruebas E2E (Playwright) + capturas de pantalla
+│   ├── playwright.config.js
+│   └── package.json
+├── informes/
+│   ├── analisis-estatico.md       # (exportar a PDF antes de entregar)
+│   ├── analisis-owasp.md          # (exportar a PDF antes de entregar)
+│   └── hallazgos/                 # Bitacora tecnica detallada (00 a 08)
+├── .github/workflows/ci.yml       # CI: pruebas + analisis estatico en cada push/PR
 ├── docker-compose.yml
 ├── README.md
 └── DOCUMENTACION.md
