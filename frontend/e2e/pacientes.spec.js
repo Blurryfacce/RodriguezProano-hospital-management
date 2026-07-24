@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { datosUnicos } = require('./helpers');
+const { datosUnicos, esperarQueAlertaSeLimpie } = require('./helpers');
 
 test.describe('Flujo CRUD de Pacientes', () => {
     test.beforeEach(async ({ page }) => {
@@ -28,6 +28,7 @@ test.describe('Flujo CRUD de Pacientes', () => {
 
         await page.click('#paciente-form button[type="submit"]');
         await expect(page.locator('#alert-container')).toContainText('Paciente creado exitosamente');
+        await esperarQueAlertaSeLimpie(page);
 
         const fila = page.locator('#pacientes-table tbody tr', { hasText: `${nombre} ${apellido}` });
         await expect(fila).toBeVisible();
@@ -47,6 +48,9 @@ test.describe('Flujo CRUD de Pacientes', () => {
         await expect(page.locator('#pacientes-table tbody tr', { hasText: `${nombre} ${apellido}` }))
             .toContainText(nuevoTelefono);
         await page.screenshot({ path: 'e2e/screenshots/pacientes-03-editado.png' });
+        // BUG documentado (helpers.js): showAlert no cancela el setTimeout de la alerta
+        // anterior; se espera a que el ciclo termine antes de la siguiente accion.
+        await esperarQueAlertaSeLimpie(page);
 
         // ---- Eliminar ----
         // BUG INTENCIONAL (ver informes/hallazgos): el frontend NO pide confirmacion
