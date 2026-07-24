@@ -37,7 +37,10 @@ Este informe consolida los hallazgos de seguridad detectados a lo largo de todo 
        --data-urlencode "q=' OR '1'='1' -- "
   # Devuelve los 4 doctores (bypass total del filtro) en vez de 0
   ```
-  Confirmado además operando la búsqueda desde la UI real (Playwright, `frontend/e2e/doctores.spec.js`, captura `doctores-09-sql-injection-bypass-desde-ui.png`).
+  Confirmado además operando la búsqueda desde la UI real (Playwright, `frontend/e2e/doctores.spec.js`):
+
+  ![Bypass de inyección SQL operando el buscador de doctores desde la UI real: se muestran los 4 doctores en vez de 0](../frontend/e2e/screenshots/doctores-09-sql-injection-bypass-desde-ui.png)
+
 - **Nota de herramientas:** SpotBugs+FindSecBugs **no detectó** esta vulnerabilidad automáticamente (ver `informes/analisis-estatico.md`, hallazgo 1) por limitaciones de taint-tracking con la concatenación de strings vía `invokedynamic` en JDK 17+. Confirma que el análisis estático no reemplaza la revisión manual ni las pruebas de penetración.
 - **Mitigación:** usar `@Query` parametrizada (JPQL o SQL nativo con `:parametro`) o el método ya existente y seguro `DoctorRepository.findByEspecialidadContainingIgnoreCase`. Eliminar el método inseguro o restringir su uso.
 - **Verificación:** ejecutar el `curl` de arriba; si la respuesta contiene más registros de los que coinciden literalmente con el payload como texto de especialidad, la vulnerabilidad está presente.
@@ -47,7 +50,9 @@ Este informe consolida los hallazgos de seguridad detectados a lo largo de todo 
 - **Categoría OWASP:** A03:2021 – Injection (Cross-Site Scripting)
 - **Riesgo:** Alto
 - **Impacto potencial:** Un usuario con acceso al formulario de historias clínicas puede almacenar JavaScript que se ejecutaría en el navegador de **cualquier otro usuario** que visualice esa historia (robo de sesión, phishing interno, pivoteo dentro de la red del hospital).
-- **Evidencia:** confirmado a nivel de API en `HistoriaClinicaControllerIntegrationTest` (Paso 3): el backend persiste y devuelve `<script>...</script>` tal cual. Confirmado también con Playwright (`frontend/e2e/historias.spec.js`, payload `<img src=x onerror="window.__xssEjecutado = true">`).
+- **Evidencia:** confirmado a nivel de API en `HistoriaClinicaControllerIntegrationTest` (Paso 3): el backend persiste y devuelve `<script>...</script>` tal cual. Confirmado también con Playwright (`frontend/e2e/historias.spec.js`), ingresando el payload directamente en el formulario real:
+
+  ![Formulario de Historia Clínica con el payload XSS <img src=x onerror=...> en el campo Diagnóstico](../frontend/e2e/screenshots/historias-02-formulario-con-payload-xss.png)
 - **Hallazgo adicional interesante:** actualmente **no es explotable vía la UI real** porque el listado de historias está roto por un bug no relacionado (`BUG-01`, serialización de proxies LAZY de Hibernate — ver `informes/hallazgos/03` y `08`), así que no existen filas ni botón "Ver" que disparen el renderizado. Esto no significa que la vulnerabilidad esté mitigada: sigue almacenada en la base de datos y sería explotable en cuanto se corrija el bug de serialización (o si otro cliente/integración consume la API directamente).
 - **Mitigación:** sanitizar el HTML en el backend antes de persistir (p. ej. con OWASP Java HTML Sanitizer) y/o escapar el contenido en el frontend al insertarlo en el DOM (usar `textContent` en vez de `innerHTML`, o pasar por una función de escape completa).
 - **Verificación:** crear una historia clínica con `diagnostico = "<img src=x onerror=alert(1)>"` vía `POST /api/historias-clinicas` y comprobar que el `GET` posterior devuelve el payload sin escapar.
@@ -131,7 +136,11 @@ Este informe consolida los hallazgos de seguridad detectados a lo largo de todo 
 - **Impacto potencial:** confirmado con Playwright en el Paso 5 con dos variantes opuestas, ambas graves:
   - Eliminar un doctor **con** citas asociadas: el backend rechaza el borrado (500), pero el usuario ve **"Doctor eliminado exitosamente"** — un falso positivo que podría hacer creer al personal administrativo que un doctor fue dado de baja cuando sigue activo.
   - Eliminar un paciente/doctor **sin** dependencias: el borrado sí se ejecuta (200), pero el usuario ve **"Error al eliminar..."** — un falso negativo que podría llevar a reintentos innecesarios o pérdida de confianza en el sistema.
-- **Evidencia:** `frontend/e2e/doctores.spec.js` (test "bug crítico"), `frontend/e2e/pacientes.spec.js`, con capturas de pantalla (`doctores-07-exito-falso-bug-critico.png`, `pacientes-04-eliminar-mensaje-enganoso-bug.png`). Detalle completo en `informes/hallazgos/06-paso5-e2e-doctores.md`.
+- **Evidencia:** `frontend/e2e/doctores.spec.js` (test "bug crítico"), `frontend/e2e/pacientes.spec.js`. Detalle completo en `informes/hallazgos/06-paso5-e2e-doctores.md`.
+
+  ![Mensaje "Doctor eliminado exitosamente" pese a que el backend respondio 500 y no elimino nada (doctor con citas asociadas)](../frontend/e2e/screenshots/doctores-07-exito-falso-bug-critico.png)
+
+  ![Mensaje "Error al eliminar paciente" pese a que el backend si completo el borrado (paciente sin dependencias)](../frontend/e2e/screenshots/pacientes-04-eliminar-mensaje-enganoso-bug.png)
 - **Mitigación:** en `apiFetch`, verificar `response.ok` y lanzar una excepción con la información del error si es `false`, permitiendo que el código que llama distinga correctamente éxito de fallo.
 - **Verificación:** eliminar (vía UI) un doctor con citas asociadas y observar el mensaje mostrado frente al estado real de los datos tras recargar.
 
