@@ -41,4 +41,23 @@ async function esperarQueAlertaSeLimpie(page) {
     );
 }
 
-module.exports = { datosUnicos, toDatetimeLocalValue, fechaFuturaDatetimeLocal, esperarQueAlertaSeLimpie };
+/**
+ * Espera a que terminen las llamadas de red del init() del modulo actual
+ * (p. ej. CitasModule.init() hace 3 fetch en paralelo antes de llamar a
+ * setupListeners()). En Pacientes/Doctores esta espera "sale gratis" porque
+ * se espera a que aparezca una fila en la tabla; en Citas/Historias la tabla
+ * nunca se llena (BUG-01), asi que sin esta espera explicita se puede hacer
+ * click en botones (p. ej. "Nueva Cita") ANTES de que su listener este
+ * conectado, y el click no hace nada.
+ */
+async function esperarModuloListo(page) {
+    await page.waitForLoadState('networkidle');
+}
+
+module.exports = {
+    datosUnicos,
+    toDatetimeLocalValue,
+    fechaFuturaDatetimeLocal,
+    esperarQueAlertaSeLimpie,
+    esperarModuloListo,
+};
